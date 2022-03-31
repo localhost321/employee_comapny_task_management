@@ -222,3 +222,4 @@ def add_goal(request):
         if form.is_valid():
             form.save()
     return redirect('task/')         
+    print("hello")
