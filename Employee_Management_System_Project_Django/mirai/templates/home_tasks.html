@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Employee System</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static '/styles.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+  </head>
+
+<body>
+
+  <div class="alert alert-primary" style="text-align: center;">
+		<h1>Tasks App</h1>
+		<div class='row'>
+			{% if user.username %} 
+			<form action="accounts/logout/" method='POST'>
+				{% csrf_token %}
+				<button type="submit" value="submit" class="btn btn-danger">Log out</button>
+			</form>
+			{% else %}
+			<form action="signup_page/" method='POST'>
+				{% csrf_token %}
+				<button type="submit" value="submit" class="btn btn-danger">Sign up</button>
+			</form>
+			<form action="accounts/login/" method='POST'>
+				{% csrf_token %}
+				<button type="submit" value="submit" class="btn btn-danger">Log in</button>
+			</form>
+			{% endif %}
+		</div>
+		
+		<form action="history/" method='POST'>
+			{% csrf_token %}
+			<button type="submit" value="submit" style=" text-decoration: none;" class="btn btn-link">history</button>
+		</form>
+	</div>
+	
+
+	<!--------------------------------- daily tasks ----------------------------------------------->
+	<div class="alert alert-primary h-100 align-items-center" style="text-align: center;">
+		<div class="row">
+			{% if today %}
+			<div class="col">
+				<p>
+					<a class="btn btn-primary" data-toggle="collapse" href="#day_{{forloop.counter}}" role="button"
+						aria-expanded="false" aria-controls="multiCollapseExample1">{{today.date}}</a>
+				</p>
+
+				<div class="collapse multi-collapse" id="day_{{forloop.counter}}">
+					<div class="card-body">
+						<h5 class="card-title">{{today.date}}</h5>
+						{% for task in today.daily_tasks.all %}
+						<p class="card-text">
+							<ul class="list-group list-group-flush">
+								<li class="list-group-item {% if task.task_done %} bg-success {% endif %}">
+									{{task.task_name}}</li>
+							</ul>
+						</p>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+
+
+	<!--------------------------------------- goals ---------------------------------------------------->
+	<div class="alert alert-primary">
+		<h2 id="goals_title">Goals</h2>
+		<div class="row" id="goals_contents">
+			{% for goal in goals %}
+			<div class="card" style="width: 18rem; margin: 5px;">
+				<!--card buttons -->
+				<div class="row" style="margin:5px;">
+					<!-- remove button -->
+					<form action="{{goal.id}}/remove_goal/" method='POST'>
+						{% csrf_token %}
+						<button type="submit" value="submit" style=" text-decoration: none;"
+							class="btn btn-link">&#x2718</button>
+					</form>
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">{{goal.name}}</h5>
+					<p class="card-text">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item"><b>Priorty</b>: {{goal.priority}}</li>
+							<li class="list-group-item"><b>Reason</b>: {{goal.reason}}</li>
+							<li class="list-group-item"><b>Information</b>: {{goal.informations}}</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<!----------------------------------------- tasks ----------------------------------------------->
+	<div class="alert alert-success" role="alert">
+		<h2>Tasks</h2>
+		<div class="row">
+			{% for task in tasks %}
+			<div id="task_{{task.id}}" class="card {% if task.task_done %} bg-success {% endif %}"
+				style="width: 18rem; margin: 5px;">
+				<!--card buttons -->
+				<div class="row" style="margin:5px;">
+					<!-- remove button -->
+					<form action="{{task.id}}/remove_task/" method='POST'>
+						{% csrf_token %}
+						<button type="submit" value="submit" style=" text-decoration: none;"
+							class="btn btn-link">&#x2718</button>
+					</form>
+					<!-- add to daily tasks button -->
+					<form action="{{task.id}}/add_task_to_daily_tasks/" method='POST'>
+						{% csrf_token %}
+						<button type="submit" value="submit" style=" text-decoration: none;"
+							class="btn btn-link">&#x2622;</button>
+					</form>
+					<!-- remove from daily tasks button -->
+					<form action="{{task.id}}/remove_task_from_daily_tasks/" method='POST'>
+						{% csrf_token %}
+						<button type="submit" value="submit" style=" text-decoration: none;"
+							class="btn btn-link">&#x1F4A4;</button>
+					</form>
+					<!-- done button -->
+					<form action="{{task.id}}/task_done/" method='POST'>
+						{% csrf_token %}
+						<button type="submit" value="submit" style=" text-decoration: none;"
+							class="btn btn-link">&#x2713;</button>
+					</form>
+					<!-- done flag -->
+					{% if task.task_done %}
+					<b>done!</b>
+					{% endif %}
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">{{task.task_name}}</h5>
+					<p class="card-text">
+						<ul class="list-group list-group-flush">
+		
+							<li class="list-group-item"><b>Goal</b>: {{task.task_goal}}</li>
+							<li class="list-group-item"><b>Priorty</b>: {{task.task_priority}}</li>
+							<li class="list-group-item"><b>Reason</b>: {{task.task_reason}}</li>
+							<li class="list-group-item"><b>Duration</b>: {{task.task_duration}}</li>
+							<li class="list-group-item"><b>Information</b>: {{task.task_informations}}</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<!------------------------------------------ forms of adding new tasks and goals ------------------------------------------>
+	<div class="alert alert-warning">
+		<p>
+			<a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button"
+				aria-expanded="false" aria-controls="multiCollapseExample1">Add Task</a>
+			<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2"
+				aria-expanded="false" aria-controls="multiCollapseExample2">Add Goal</button>
+		</p>
+
+		<div class="row">
+			<div class="col">
+			
+					<!--------------------------- form of adding new task ----------------------------------------->
+					<form action="add_task/" method="post">
+						{% csrf_token %}
+						{{ form }}
+						<div class="card" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Add Task</h5>
+								<p class="card-text">
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Task name</label>
+										<input class="form-control"
+											style="border-bottom: wheat; background-color:rgb(252, 235, 182);"
+											name="task_name">
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlSelect1">Task Goal</label>
+										<select class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);" name="task_goal">
+											{% for goal in goals %}
+											<option value="{{goal.name}}">{{goal.name}}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlSelect1">Task_priority</label>
+										<select class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);"
+											name="task_priority">
+											<option>1</option>
+											<option>2</option>
+											<option>3</option>
+											<option>4</option>
+											<option>5</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Task Reason</label>
+										<input class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);"
+											name="task_reason">
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlTextarea1">Task Duration</label>
+										<input class="form-control" value="1"
+											style="border:none; background-color:rgb(252, 235, 182);"
+											name="task_duration">
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Task Information</label>
+										<textarea class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);"
+											name="task_informations" rows="3"></textarea>
+									</div>
+									<button type="submit" value="Submit" class="btn btn-primary">Add</button>
+								</p>
+							</div>
+						</div>
+					</form>
+				</div>
+			
+			<div class="col">
+					<!--------------------------- form of adding new goal ----------------------------------------->
+					<form action="add_goal/" method="post">
+						{% csrf_token %}
+						{{ form }}
+						<div class="card" style="width: 18rem;">
+							<div class="card-body">
+								<h5 class="card-title">Add Goal</h5>
+								<p class="card-text">
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Goal name</label>
+										<input class="form-control"
+											style="border-bottom: wheat; background-color:rgb(252, 235, 182);"
+											name="name">
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlSelect1">Goal priority</label>
+										<select class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);" name="priority">
+											<option>1</option>
+											<option>2</option>
+											<option>3</option>
+											<option>4</option>
+											<option>5</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Goal Reason</label>
+										<input class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);" name="reason">
+									</div>
+									<div class="form-group">
+										<label for="exampleFormControlInput1">Goal Information</label>
+										<textarea class="form-control"
+											style="border:none; background-color:rgb(252, 235, 182);"
+											name="informations" rows="3"></textarea>
+									</div>
+									<button type="submit" value="Submit" class="btn btn-primary">Add</button>
+								</p>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+	<!-- Optional JavaScript -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+	{% load static %}
+	<script src="{% static 'ajax.js' %}"></script>
+
+
+
+
+
+</body>
+
+  
+</html
