@@ -73,9 +73,20 @@
         </form>  -->
 
     <!-- ----------------> 
+    <center>
+    Upload Excel File
 
-
-
+    <form method="post" enctype="multipart/form-data" action="/import">
+      {% csrf_token %}
+      <input type="file" name="myfile">
+      <button type="submit">Upload</button>
+    </form>
+ 
+  <form action="/export">
+    <button type="Submit"> Export </button>
+  </form> 
+</center>
+  
     <table class="table">
       <thead class="bg-danger text-white">
         <tr>

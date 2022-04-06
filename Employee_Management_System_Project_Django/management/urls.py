@@ -44,9 +44,8 @@ urlpatterns = [
 
 
 
-
-    path('export/', views.export),
-    path('', views.simple_upload),
+    path('export', views.export),
+    path('import', views.simple_upload),
 
     path('task', views.task),
     path('showtask/', views.showtask),

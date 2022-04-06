@@ -56,27 +56,13 @@ def simple_upload(request):
     if request.method == 'POST':
         person_resource = EmployeeResource()
         dataset = Dataset()
-        print("test")
         new_person = request.FILES['myfile']
-        print("hello")
-        # if not new_persons.name.endwith('xlsx'):
-        #     messages.info(request, 'wrong format')
         imported_data = dataset.load(new_person.read(),format='xlsx')
-        #print(imported_data)
-        print("hello tests")
         for data in imported_data:
-            value = Employee(data[0],data[1],data[2],data[3],data[4])
-            print(value)
-            print("done")
+            value = Employee(data[0],data[1],data[2],data[3],data[4],data[5])
             value.save()  
-            print("cinoabkeh")     
-        
-        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
-
-        #if not result.has_errors():
-        #    person_resource.import_data(dataset, dry_run=False)  # Actually import now
-
-    return render(request, 'input.html')
+    
+    return redirect("/showemp")
 
 #Home page
 def home(request):
